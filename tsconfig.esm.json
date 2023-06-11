@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // ECMAScript module settings:
+    "module": "ESNext",
+    "outDir": "./dist/esm",
+    // We will actually emit code:
+    "emitDeclarationOnly": false,
+    "declaration": false,
+    "composite": false
+  }
+}
