@@ -9,18 +9,38 @@ import { z } from 'zod'
  * reference by-value into functions, being a
  * pass-by-value language. This allows
  * a pass-by-reference semantic.
+ *
+ * @category Parsing
  */
 export type ByRef<T> = [T]
 
-/** Position reference. */
+/**
+ * Position reference.
+ *
+ * @category Parsing
+ */
 export type Position = ByRef<number>
 
-/** Type to indicate success with no result, such as optional grammar. */
+/**
+ * Type to indicate success with no result, such as optional grammar.
+ *
+ * @category Nodes
+ */
 export type Empty = typeof Empty
-/** Symbol to indicate success with no result, such as optional grammar. */
+/**
+ * The `Empty` symbol denotes a grammar did not match anything, such as optional grammar.
+ *
+ * @category Nodes
+ *
+ * @public
+ */
 export const Empty = Symbol('Empty')
 
-/** Token node with a single value. */
+/**
+ * Token node with a single value.
+ *
+ * @category Nodes
+ */
 export class Token extends String {
   /** The ID of the grammar that created the node. */
   declare readonly id: string
@@ -28,8 +48,8 @@ export class Token extends String {
   /**
    * Creates a token.
    *
-   * @param id The ID of the grammar that parsed the token.
-   * @param value The data parsed by the grammar.
+   * @param id - The ID of the grammar that parsed the token.
+   * @param value - The data parsed by the grammar.
    */
   constructor (id: string, value: string) {
     super(value)
@@ -38,36 +58,25 @@ export class Token extends String {
   }
 }
 
-/** Syntax node with a child values. */
-export interface Syntax extends ArrayLike<Node> {
-  /** The ID of the grammar that created the node. */
-  readonly id: string
-
-  [Symbol.iterator] (): IterableIterator<Node>
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- matching `Array.prorotype.find`.
-  find<S extends Node> (cb: (item: Node, index: number, nodes: readonly Node[]) => item is S, thisArg?: any): S | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- matching `Array.prorotype.find`.
-  find (cb: (item: Node, index: number, nodes: readonly Node[]) => unknown, thisArg?: any): Node | undefined
-
-  query (path: string): Node | undefined
-  query (path: string, type: typeof Token): Token | undefined
-  query (path: string, type: typeof Syntax): Syntax | undefined
-}
-
 /**
- * Hidden syntax node class so the interface and constructor
- * are defined without Array methods in the typings.
+ * Syntax node with a child values.
+ *
+ * @remarks
+ * The syntax node is an [Array](https://mdn.io/Array) that contain the non-terminal semantic
+ * symbols that a grammar matched. Each element of a syntax node may be
+ * any other typeof [Node](#node).
+ *
+ * @category Nodes
  */
-class SyntaxBase extends Array<Node> implements Syntax {
+export class Syntax extends Array<Node> {
   /** The ID of the grammar that created the node. */
   declare readonly id: string
 
   /**
    * Creates a syntax node.
    *
-   * @param id The ID of the grammar that parsed the syntax.
-   * @param children The child node in the syntax.
+   * @param id - The ID of the grammar that parsed the syntax.
+   * @param children - The child node in the syntax.
    */
   constructor (id: string, children: Node[]) {
     super(...children.map(child => {
@@ -84,21 +93,21 @@ class SyntaxBase extends Array<Node> implements Syntax {
   /**
    * Queries a node in the syntax tree.
    *
-   * @param path The path to the node to be queried.
+   * @param path - The path to the node to be queried.
    */
   query (path: string): Node | undefined
   /**
    * Queries a node in the syntax tree.
    *
-   * @param path The path to the node to be queried.
-   * @param type The expected type of the node, in this case a Token.
+   * @param path - The path to the node to be queried.
+   * @param type - The expected type of the node, in this case a Token.
    */
   query (path: string, type: typeof Token): Token | undefined
   /**
    * Queries a node in the syntax tree.
    *
-   * @param path The path to the node to be queried.
-   * @param type The expected type of the node, in this case a Syntax.
+   * @param path - The path to the node to be queried.
+   * @param type - The expected type of the node, in this case a Syntax.
    */
   query (path: string, type: typeof Syntax): Syntax | undefined
   query (path: string, type?: NodeType) {
@@ -127,28 +136,39 @@ class SyntaxBase extends Array<Node> implements Syntax {
   }
 }
 
-/** Syntax constructor. */
-export const Syntax = SyntaxBase as
-  /**
-   * Creates a syntax node.
-   *
-   * @param id The ID of the grammar that parsed the syntax.
-   * @param children The child node in the syntax.
-   */
-  new (id: string, children: Node[]) => Syntax
-
-/** Syntax tree node. */
+/**
+ * Syntax tree node.
+ *
+ * @remarks
+ * All syntax tree nodes provide an `id` field to identify the grammar that matched
+ * the node, if the ID was provided. A node can be a [Syntax](#syntax)
+ * node or [Token](#token) node.
+ *
+ * @category Nodes
+ */
 export type Node = Token | Syntax
 
-/** Possible node types to query. */
+/**
+ * Possible node types to query.
+ *
+ * @category Nodes
+ */
 type NodeType = typeof Syntax | typeof Token
 
-/** Checks that a value is a syntax tree node. */
+/**
+ * Checks that a value is a syntax tree node.
+ *
+ * @category Nodes
+ */
 export function isNode (value: unknown): value is Node {
   return value instanceof Syntax || value instanceof Syntax
 }
 
-/** Zod schemas for the nodes. */
+/**
+ * Zod schemas for the nodes.
+ *
+ * @category Nodes
+ */
 export const zod = {
   /** Verifies any syntax tree node. */
   node: z.custom<Node>(isNode),
@@ -164,5 +184,9 @@ export const zod = {
     : z.instanceof(Syntax))
 }
 
-/** A stream position rewind function. */
+/**
+ * A stream position rewind function.
+ *
+ * @category Parsing
+ */
 export type Rewind = () => void

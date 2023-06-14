@@ -3,7 +3,11 @@ import { getCharacterCodePoint, getCodePointAt, toUnicode } from './utilities'
 import type { ByRef, Node, Position, Rewind } from './basics'
 import type { Context } from './parser'
 
-/** Abstract grammar graphs. */
+/**
+ * Abstract grammar graphs.
+ *
+ * @category Grammar
+ */
 export type GrammarGraph =
   | [id: 'quantifier', target: Grammar, min: number, max: number]
   | [id: 'exclusion', target: Grammar, exclusion: Grammar]
@@ -20,7 +24,11 @@ type EmptyValue<Nothing extends Empty | null> =
     ? true : Nothing extends null
       ? false : boolean
 
-/** Defined grammar parser. */
+/**
+ * Defined grammar parser.
+ *
+ * @category Grammar
+ */
 export abstract class Grammar<Nothing extends Empty | null = null> {
   /** The grammmar ID. */
   readonly id: string
@@ -34,10 +42,10 @@ export abstract class Grammar<Nothing extends Empty | null = null> {
   /**
    * Creates a new grammar.
    *
-   * @param tag The string tag for the grammar, useful for debugging.
-   * @param id The ID of the grammar.
-   * @param empty Indicates whether the grammar can result in Empty.
-   * @param graph The graph for the grammar.
+   * @param tag - The string tag for the grammar, useful for debugging.
+   * @param id - The ID of the grammar.
+   * @param empty - Indicates whether the grammar can result in Empty.
+   * @param graph - The graph for the grammar.
    */
   constructor (tag: string, id: string, empty: EmptyValue<Nothing>, graph: GrammarGraph) {
     Object.defineProperties(this, { [Symbol.toStringTag]: { value: tag } })
@@ -50,10 +58,10 @@ export abstract class Grammar<Nothing extends Empty | null = null> {
   /**
    * Parses a stream.
    *
-   * @param ctx The parser context.
-   * @param stream The stream being parsed.
-   * @param first The current, or first, position.
-   * @param last The final, or last, position; usually one after the end of the stream.
+   * @param ctx - The parser context.
+   * @param stream - The stream being parsed.
+   * @param first - The current, or first, position.
+   * @param last - The final, or last, position; usually one after the end of the stream.
    * @returns A node or the Nothing value.
    */
   run (ctx: Context, stream: string, first: Position, last: Position) {
@@ -71,11 +79,11 @@ export abstract class Grammar<Nothing extends Empty | null = null> {
   /**
    * Concrete parsing logic.
    *
-   * @param ctx The parser context.
-   * @param stream The stream being parsed.
-   * @param first The current, or first, position.
-   * @param last The final, or last, position; usually one after the end of the stream.
-   * @param rewind A function to rewind back to the starting position.
+   * @param ctx - The parser context.
+   * @param stream - The stream being parsed.
+   * @param first - The current, or first, position.
+   * @param last - The final, or last, position; usually one after the end of the stream.
+   * @param rewind - A function to rewind back to the starting position.
    */
   protected abstract parse (
     ctx: Context,
@@ -86,17 +94,25 @@ export abstract class Grammar<Nothing extends Empty | null = null> {
   ): Node | Nothing
 }
 
-/** Any grammar. */
+/**
+ * Any grammar.
+ *
+ * @category Grammar
+ */
 export type AnyGrammar = Grammar<Empty | null>
 
-/** Grammar that cannot return an empty result. */
+/**
+ * Grammar that cannot return an empty result.
+ *
+ * @category Grammar
+ */
 export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new non-empty grammar.
    *
-   * @param tag The string tag for the grammar, useful for debugging.
-   * @param id The ID of the grammar.
-   * @param graph The graph for the grammar.
+   * @param tag - The string tag for the grammar, useful for debugging.
+   * @param id - The ID of the grammar.
+   * @param graph - The graph for the grammar.
    */
   constructor (tag: string, id: string, graph: GrammarGraph) {
     super(tag, id, false, graph)
@@ -105,16 +121,16 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new grammar indicating this grammar must repeat.
    *
-   * @param min The minimal number of repetitions.
-   * @param max The maximum number of repetitions.
+   * @param min - The minimal number of repetitions.
+   * @param max - The maximum number of repetitions.
    */
   between (min: number, max: number): NonEmptyGrammar
   /**
    * Creates a new grammar indicating this grammar must repeat.
    *
-   * @param id The ID of the new derived grammar.
-   * @param min The minimal number of repetitions.
-   * @param max The maximum number of repetitions.
+   * @param id - The ID of the new derived grammar.
+   * @param min - The minimal number of repetitions.
+   * @param max - The maximum number of repetitions.
    */
   between (id: string, min: number, max: number): NonEmptyGrammar
   between (...args: [string | number, number, number?]) {
@@ -128,14 +144,14 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new grammar indicating this grammar must repeat a minimum number of times.
    *
-   * @param min The minimal number of repetitions.
+   * @param min - The minimal number of repetitions.
    */
   atLeast (min: number): NonEmptyGrammar
   /**
    * Creates a new grammar indicating this grammar must repeat a minimum number of times.
    *
-   * @param id The ID of the new derived grammar.
-   * @param min The minimal number of repetitions.
+   * @param id - The ID of the new derived grammar.
+   * @param min - The minimal number of repetitions.
    */
   atLeast (id: string, min: number): NonEmptyGrammar
   atLeast (...args: [string | number, number?]) {
@@ -147,14 +163,14 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new grammar indicating this grammar may repeat a maximum number of times.
    *
-   * @param max The maximum number of repetitions.
+   * @param max - The maximum number of repetitions.
    */
   asMost (max: number): NonEmptyGrammar
   /**
    * Creates a new grammar indicating this grammar may repeat a maximum number of times.
    *
-   * @param id The ID of the new derived grammar.
-   * @param max The maximum number of repetitions.
+   * @param id - The ID of the new derived grammar.
+   * @param max - The maximum number of repetitions.
    */
   asMost (id: string, max: number): NonEmptyGrammar
   asMost (...args: [string | number, number?]) {
@@ -166,7 +182,7 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new grammar indicating this grammar may repeat zero or more times.
    *
-   * @param id The ID of the new derived grammar.
+   * @param id - The ID of the new derived grammar.
    */
   zeroOrMore (id?: string | undefined): NonEmptyGrammar {
     return id != null
@@ -177,7 +193,7 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a new grammar indicating this grammar must repeat one or more times.
    *
-   * @param id The ID of the new derived grammar.
+   * @param id - The ID of the new derived grammar.
    */
   oneOrMore (id?: string | undefined) {
     return id != null
@@ -188,14 +204,14 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a grammar that indicates this grammar is parsed after confirming the excluded grammar can not.
    *
-   * @param exclude The grammar to exclude.
+   * @param exclude - The grammar to exclude.
    */
   butNot (exclude: NonEmptyGrammar): NonEmptyGrammar
   /**
    * Creates a grammar that indicates this grammar is parsed after confirming the excluded grammar can not.
    *
-   * @param id The ID of the new derived grammar.
-   * @param exclude The grammar to exclude.
+   * @param id - The ID of the new derived grammar.
+   * @param exclude - The grammar to exclude.
    */
   butNot (id: string, exclude: NonEmptyGrammar): NonEmptyGrammar
   butNot (...args: [string | Grammar, NonEmptyGrammar?]): NonEmptyGrammar {
@@ -208,7 +224,7 @@ export abstract class NonEmptyGrammar extends Grammar {
   /**
    * Creates a grammar that indicates this grammar may, or may not, parse.
    *
-   * @param id The ID of the new derived grammar.
+   * @param id - The ID of the new derived grammar.
    */
   maybe (id?: string | undefined) {
     return new OptionalGrammar(this, id)
@@ -268,6 +284,9 @@ class ExclusionGrammar extends NonEmptyGrammar {
   }
 }
 
+/**
+ * @category Grammar
+ */
 export class OptionalGrammar extends Grammar<Empty> {
   #target: Grammar
 
@@ -304,7 +323,9 @@ export class OptionalGrammar extends Grammar<Empty> {
  *
  * This is used when a grammar tree container recursion into itself directly or indirectly.
  *
- * @param fn Function that returns the referenced grammar.
+ * @param fn - Function that returns the referenced grammar.
+ *
+ * @category Grammar
  */
 export function ref (fn: () => Grammar): NonEmptyGrammar {
   return new GrammarReference(fn)
@@ -332,14 +353,18 @@ type Choices = [Grammar, Grammar, ...Grammar[]]
 /**
  * Creates a grammar that attempts to parse a choice of other grammars.
  *
- * @param options The choice grammars.
+ * @param options - The choice grammars.
+ *
+ * @category Grammar
  */
 export function choose (options: Choices): NonEmptyGrammar
 /**
  * Creates a grammar that attempts to parse a choice of other grammars.
  *
- * @param id The ID of the new derived grammar.
- * @param options The choice grammars.
+ * @param id - The ID of the new derived grammar.
+ * @param options - The choice grammars.
+ *
+ * @category Grammar
  */
 export function choose (id: string, options: Choices): NonEmptyGrammar
 export function choose (...args: [string | Choices, Choices?]) {
@@ -379,14 +404,18 @@ type Parts = [AnyGrammar, AnyGrammar, ...AnyGrammar[]]
 /**
  * Creates a sequence that parses a contiguous series of grammars.
  *
- * @param parts Grammar parts of the sequence.
+ * @param parts - Grammar parts of the sequence.
+ *
+ * @category Grammar
  */
 export function sequence (parts: Parts): NonEmptyGrammar
 /**
  * Creates a sequence that parses a contiguous series of grammars.
  *
- * @param id The ID of the new derived grammar.
- * @param parts Grammar parts of the sequence.
+ * @param id - The ID of the new derived grammar.
+ * @param parts - Grammar parts of the sequence.
+ *
+ * @category Grammar
  */
 export function sequence (id: string, parts: Parts): NonEmptyGrammar
 export function sequence (...args: [string | Parts, Parts?]) {
@@ -427,7 +456,9 @@ class ConcatenationGrammar extends NonEmptyGrammar {
 /**
  * Creates a grammar that will disallow parsing of a target grammar.
  *
- * @param target The grammar to disallow.
+ * @param target - The grammar to disallow.
+ *
+ * @category Grammar
  */
 export function not (target: Grammar): Grammar<Empty | null> {
   return new NegationGrammar(target)
@@ -455,6 +486,8 @@ class NegationGrammar extends Grammar<Empty | null> {
 
 /**
  * Creates a grammar that matches the end of the stream.
+ *
+ * @category Grammar
  */
 export function end (): EndOfStreamGrammar {
   return new EndOfStreamGrammar()
@@ -482,14 +515,18 @@ class EndOfStreamGrammar extends Grammar<Empty | null> {
 /**
  * Creates a grammar that converts the parsed grammar into a single token.
  *
- * @param grammar The grammar to convert.
+ * @param grammar - The grammar to convert.
+ *
+ * @category Grammar
  */
 export function token (grammar: Grammar): NonEmptyGrammar
 /**
  * Creates a grammar that converts the parsed grammar into a single token.
  *
- * @param id The ID of the new derived grammar.
- * @param grammar The grammar to convert.
+ * @param id - The ID of the new derived grammar.
+ * @param grammar - The grammar to convert.
+ *
+ * @category Grammar
  */
 export function token (id: string, grammar: Grammar): NonEmptyGrammar
 export function token (...args: [string | Grammar, Grammar?]) {
@@ -522,14 +559,18 @@ class TokenGrammar extends NonEmptyGrammar {
 /**
  * Creates a grammar that matches an exact stream.
  *
- * @param value The literal string the match.
+ * @param value - The literal string the match.
+ *
+ * @category Grammar
  */
 export function lit (value: string): NonEmptyGrammar
 /**
  * Creates a grammar that matches an exact stream.
  *
- * @param id The ID of the new derived grammar.
- * @param value The literal string the match.
+ * @param id - The ID of the new derived grammar.
+ * @param value - The literal string the match.
+ *
+ * @category Grammar
  */
 // eslint-disable-next-line @typescript-eslint/unified-signatures -- Needed for proper documentation.
 export function lit (id: string, value: string): NonEmptyGrammar
@@ -581,7 +622,9 @@ class LiteralStringGrammar extends NonEmptyGrammar {
  *
  * This can be used as an optimized version of in-character-set and literal for one character.
  *
- * @param value The character to match.
+ * @param value - The character to match.
+ *
+ * @category Grammar
  */
 export function char (value: string): NonEmptyGrammar
 /**
@@ -589,8 +632,10 @@ export function char (value: string): NonEmptyGrammar
  *
  * This can be used as an optimized version of in-character-set and literal for one character.
  *
- * @param id The ID of the new derived grammar.
- * @param value The character to match.
+ * @param id - The ID of the new derived grammar.
+ * @param value - The character to match.
+ *
+ * @category Grammar
  */
 // eslint-disable-next-line @typescript-eslint/unified-signatures -- Needed for proper documentation.
 export function char (id: string, value: string): NonEmptyGrammar
@@ -628,14 +673,18 @@ class LiteralCharacterGrammar extends NonEmptyGrammar {
 /**
  * Creates a grammar that matches any single character that is not the specified.
  *
- * @param value The character to exclude.
+ * @param value - The character to exclude.
+ *
+ * @category Grammar
  */
 export function notChar (value: string): NonEmptyGrammar
 /**
  * Creates a grammar that matches any single character that is not the specified.
  *
- * @param id The ID of the new derived grammar.
- * @param value The character to exclude.
+ * @param id - The ID of the new derived grammar.
+ * @param value - The character to exclude.
+ *
+ * @category Grammar
  */
 // eslint-disable-next-line @typescript-eslint/unified-signatures -- Needed for proper documentation.
 export function notChar (id: string, value: string): NonEmptyGrammar
@@ -646,7 +695,11 @@ export function notChar (...args: [string, string?]) {
   return new NotCharacterGrammar(cp, id)
 }
 
-/** An optimized version of the not-in-character-set grammar for one character. */
+/**
+ * An optimized version of the not-in-character-set grammar for one character.
+ *
+ * @category Grammar
+ */
 class NotCharacterGrammar extends NonEmptyGrammar {
   #cp: number
 
@@ -668,12 +721,20 @@ class NotCharacterGrammar extends NonEmptyGrammar {
   }
 }
 
-/** Character set specifiers. */
+/**
+ * Character set specifiers.
+ *
+ * @category Grammar
+ */
 export type CharSetSpecifier =
   | string
   | [string, string]
 
-/** Character set specifier code point ranges. */
+/**
+ * Character set specifier code point ranges.
+ *
+ * @category Grammar
+ */
 type CharSetRange =
   | number
   | [number, number]
@@ -709,14 +770,18 @@ abstract class BaseCharSetGrammar extends NonEmptyGrammar {
 /**
  * Creates a grammar that parsers a character in a specified set.
  *
- * @param specifiers Character set specifiers.
+ * @param specifiers - Character set specifiers.
+ *
+ * @category Grammar
  */
 export function charSet (specifiers: CharSetSpecifier[]): CharSetGrammar
 /**
  * Creates a grammar that parsers a character in a specified set.
  *
- * @param id The ID of the new derived grammar.
- * @param specifiers Character set specifiers.
+ * @param id - The ID of the new derived grammar.
+ * @param specifiers - Character set specifiers.
+ *
+ * @category Grammar
  */
 export function charSet (id: string, specifiers: CharSetSpecifier[]): CharSetGrammar
 export function charSet (...args: [string | CharSetSpecifier[], CharSetSpecifier[]?]) {
@@ -752,14 +817,18 @@ class CharSetGrammar extends BaseCharSetGrammar {
 /**
  * Creates a grammar that parses a character not in a specified set.
  *
- * @param specifiers Character set specifies.
+ * @param specifiers - Character set specifies.
+ *
+ * @category Grammar
  */
 export function notCharSet (specifiers: CharSetSpecifier[]): NotCharSetGrammar
 /**
  * Creates a grammar that parses a character not in a specified set.
  *
- * @param id The ID of the new derived grammar.
- * @param specifiers Character set specifies.
+ * @param id - The ID of the new derived grammar.
+ * @param specifiers - Character set specifies.
+ *
+ * @category Grammar
  */
 export function notCharSet (id: string, specifiers: CharSetSpecifier[]): NotCharSetGrammar
 export function notCharSet (...args: [string | CharSetSpecifier[], CharSetSpecifier[]?]) {

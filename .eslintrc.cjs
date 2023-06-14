@@ -23,7 +23,8 @@ module.exports = defineConfig({
       files: ['*.ts', '*.tsx'],
       parserOptions: {
         project: [
-          './tsconfig.json'
+          './tsconfig.json',
+          './scripts/tsconfig.json'
         ]
       }
     },

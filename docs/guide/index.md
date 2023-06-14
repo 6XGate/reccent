@@ -62,7 +62,7 @@ still created by **Reccent** before it is squashed into a single terminal or tok
 
 It should be generally faster than parsers built on large switch statement structures but likely
 slower than those built on some form of proper [finite state machine](https://w.wiki/5v8) in
-utilizing state tables the same runtime environment.
+utilizing state tables in the same runtime environment.
 
 ## About the Syntax Tree
 

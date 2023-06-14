@@ -52,14 +52,14 @@ const doctypebody = lx.sequence([
 
 ## Operations
 
-Operation are only available to _non-empty grammars_. They allow the use of qualifiers, marking a
+Operation are only available to _non-empty grammars_. They allow the use of quantifiers, marking a
 grammar as optional, or negating another grammar in the same context.
 
 ### Quantifiers
 
 Quantifiers allow specifying that a grammar can or should be repeated a set number of times.
 
-- **between** Indicates that the grammar should be repeated a minimum and maximum number of times
+- [**between**](/reference/grammar#nonemptygrammar-between) Indicates that the grammar should be repeated a minimum and maximum number of times
   akin to the **Regular Express** "`{n,m}`" quantifier operator.
   ```ts
   const llcname = name.between(2, 3)

@@ -3,7 +3,9 @@ import type { ByRef } from './basics'
 /**
  * Creates a stream of UTF-32 code-points from a string.
  *
- * @param value String to convert.
+ * @param value - String to convert.
+ *
+ * @category Utilities
  */
 export function toUnicode (value: string) {
   // Calculate the needed length.
@@ -56,8 +58,10 @@ export function toUnicode (value: string) {
 /**
  * Gets a code-point from a string/stream.
  *
- * @param stream The stream from which to get the code-point.
- * @param at The position in the stream.
+ * @param stream - The stream from which to get the code-point.
+ * @param at - The position in the stream.
+ *
+ * @category Utilities
  */
 export function getCodePointAt (stream: string, at: ByRef<number>) {
   const cp = stream.codePointAt(at[0])
@@ -80,7 +84,9 @@ export function getCodePointAt (stream: string, at: ByRef<number>) {
 /**
  * Gets the code-point of a character.
  *
- * @param value The character to convert.
+ * @param value - The character to convert.
+ *
+ * @category Utilities
  */
 export function getCharacterCodePoint (value: string) {
   const cp = value.codePointAt(0)

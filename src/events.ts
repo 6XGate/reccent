@@ -6,8 +6,10 @@ import type { Context } from './parser'
 /**
  * Creates a grammar proxy that will call an event listener if the parser succeeds.
  *
- * @param grammar Grammar that must successfully be parsed.
- * @param fn The callback function to call if the grammar succeeds.
+ * @param grammar - Grammar that must successfully be parsed.
+ * @param fn - The callback function to call if the grammar succeeds.
+ *
+ * @category Events
  */
 export function on<G extends AnyGrammar> (grammar: G, fn: (node: Node) => unknown): G {
   function run (ctx: Context, stream: string, first: Position, last: Position) {
@@ -33,8 +35,10 @@ export function on<G extends AnyGrammar> (grammar: G, fn: (node: Node) => unknow
 /**
  * Creates a grammar proxy that will call an event listener if the parser fails.
  *
- * @param grammar Grammar that must failed to be parsed.
- * @param fn The callback function to call if the grammar fails.
+ * @param grammar - Grammar that must failed to be parsed.
+ * @param fn - The callback function to call if the grammar fails.
+ *
+ * @category Events
  */
 export function failed<G extends AnyGrammar> (grammar: G, fn: (id: string, at: number) => unknown): G {
   function run (ctx: Context, stream: string, first: Position, last: Position) {

@@ -38,3 +38,4 @@ dev-app-update.yml
 # Build output
 dist/
 out/
+temp/

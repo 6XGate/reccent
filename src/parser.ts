@@ -5,21 +5,38 @@ import type { ByRef, Node } from './basics'
 
 const kIsContext = Symbol('isContext')
 
-/** The parser context. */
+/**
+ * The parser context.
+ *
+ * @category Parsing
+ */
 export interface Context {
   [kIsContext]: true
   lastId: string | undefined
 }
 
-/** The concrete parser context. */
+/**
+ * The concrete parser context.
+ *
+ * @category Parsing
+ */
 class ParserContext implements Context {
   [kIsContext] = true as const
   lastId: string | undefined
 }
 
+/**
+ * Node filter callback.
+ *
+ * @category Parsing
+ */
 type NodeFilter = (node: Node) => boolean
 
-/** The schema of the parser configuration. */
+/**
+ * The schema of the parser configuration.
+ *
+ * @category Parsing
+ */
 const ParserConfiguration = z.object({
   grammar: z
     // We don't wrap the grammar function in a schema since it will remove necessary members.
@@ -39,12 +56,24 @@ const ParserConfiguration = z.object({
     .default(true)
 })
 
-/** The parser options. */
+/**
+ * The parser options.
+ *
+ * @category Parsing
+ */
 export type ParserOptions = z.input<typeof ParserConfiguration>
-/** The resolved parser options. */
+/**
+ * The resolved parser options.
+ *
+ * @category Parsing
+ */
 type ParserConfiguration = z.output<typeof ParserConfiguration>
 
-/** Indicates a parsing failure. */
+/**
+ * Indicates a parsing failure.
+ *
+ * @category Parsing
+ */
 interface ParserFailure {
   /** Indicates the parsing failed. */
   succeeded: false
@@ -54,18 +83,30 @@ interface ParserFailure {
   at: number
 }
 
-/** Indicates a successful parse. */
+/**
+ * Indicates a successful parse.
+ *
+ * @category Parsing
+ */
 interface ParserResult {
   /** Indicates the parsing succeeded. */
   succeeded: true
   /** The parsed syntax tree. */
-  ast: Node
+  bst: Node
 }
 
-/** The parsing results. */
+/**
+ * The parsing results.
+ *
+ * @category Parsing
+ */
 type ParserReturn = ParserFailure | ParserResult
 
-/** Grammar-based parser. */
+/**
+ * Grammar-based parser.
+ *
+ * @category Parsing
+ */
 export class Parser {
   /** Parsing configuration. */
   #configuration: ParserConfiguration
@@ -83,8 +124,8 @@ export class Parser {
     const last: ByRef<number> = [stream.length]
     const ctx = new ParserContext()
 
-    let ast = this.#configuration.grammar.run(ctx, stream, first, last)
-    if (ast == null) {
+    let bst = this.#configuration.grammar.run(ctx, stream, first, last)
+    if (bst == null) {
       return {
         succeeded: false,
         expected: this.#configuration.aliases?.get(ctx.lastId as string) ?? ctx.lastId as string,
@@ -100,20 +141,20 @@ export class Parser {
       }
     }
 
-    if (ast instanceof Token) {
+    if (bst instanceof Token) {
       return {
         succeeded: true,
-        ast
+        bst
       }
     }
 
-    if (ast instanceof Syntax) {
-      ast = Parser.#filterSyntax(ast, this.#configuration.filter)
+    if (bst instanceof Syntax) {
+      bst = Parser.#filterSyntax(bst, this.#configuration.filter)
     }
 
     return {
       succeeded: true,
-      ast
+      bst
     }
   }
 

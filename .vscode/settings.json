@@ -1,0 +1,10 @@
+{
+    "material-icon-theme.activeIconPack": "vue",
+    "material-icon-theme.folders.associations": {
+      ".vitepress": "vuepress"
+    },
+    "files.associations": {
+      "api-extractor.json": "jsonc",
+      "tsdoc.json": "jsonc"
+    }
+}

@@ -34,7 +34,9 @@ export default defineConfig({
             { text: 'Terminal Grammar', link: '/guide/grammar/terminals' },
             { text: 'Non-terminal Grammar', link: '/guide/grammar/non-terminals' }
           ]
-        }
+        },
+        { text: 'Basic Syntax Tree', link: '/guide/tree' },
+        { text: 'Parsing', link: '/guide/parsing' }
       ],
       '/reference/': [
         {
