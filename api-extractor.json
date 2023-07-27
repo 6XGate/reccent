@@ -69,7 +69,7 @@
    *
    * DEFAULT VALUE: "crlf"
    */
-  // "newlineKind": "crlf",
+  "newlineKind": "lf",
 
   /**
    * Set to true when invoking API Extractor's test harness. When `testMode` is true, the `toolVersion` field in the
@@ -395,7 +395,7 @@
         // "addToApiReportFile": false
       },
 
-      // TODO: Disable this later...
+      // TODO: Disable this later, I will add these...
       "ae-missing-release-tag": {
         "logLevel": "none"
       }

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    // Common information for all library builds.
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "incremental": true,
+    "rootDir": "./src",
+  }
+}

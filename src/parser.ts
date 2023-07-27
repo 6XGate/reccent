@@ -11,7 +11,15 @@ const kIsContext = Symbol('isContext')
  * @category Parsing
  */
 export interface Context {
+  /**
+   * Identifier this as a context.
+   *
+   * @internal
+   */
   [kIsContext]: true
+  /**
+   * The ID of the last attempted grammar.
+   */
   lastId: string | undefined
 }
 
@@ -59,6 +67,24 @@ const ParserConfiguration = z.object({
 /**
  * The parser options.
  *
+ * @remarks
+ * The type is generated from a Zod scheme, the resulting type is as follows.
+ * ```ts
+ * interface ParserOptions {
+ *   grammar: Grammar<null>
+ *   aliases?: Record<string, string> | Map<string, string> | undefined
+ *   filter?: NodeFilter | undefined
+ *   mustConsumeAll?: boolean | undefined // default to `true`
+ * }
+ * ```
+ * <table>
+ *   <tr><th> Field          </th><th> Description                                                   </th></tr>
+ *   <tr><td> grammar        </td><td> The root grammar to use for parsing                           </td></tr>
+ *   <tr><td> aliases        </td><td> Aliases to use when identifying the final grammar             </td></tr>
+ *   <tr><td> filter         </td><td> Filters out unnesessary nodes from the syntax tree            </td></tr>
+ *   <tr><td> mustConsumeAll </td><td> Tells the parser to fail if the entire stream is not consumed </td></tr>
+ * </table>
+ *
  * @category Parsing
  */
 export type ParserOptions = z.input<typeof ParserConfiguration>
@@ -74,7 +100,7 @@ type ParserConfiguration = z.output<typeof ParserConfiguration>
  *
  * @category Parsing
  */
-interface ParserFailure {
+export interface ParserFailure {
   /** Indicates the parsing failed. */
   succeeded: false
   /** The ID of the expected grammar. */
@@ -88,7 +114,7 @@ interface ParserFailure {
  *
  * @category Parsing
  */
-interface ParserResult {
+export interface ParserResult {
   /** Indicates the parsing succeeded. */
   succeeded: true
   /** The parsed syntax tree. */
@@ -100,7 +126,7 @@ interface ParserResult {
  *
  * @category Parsing
  */
-type ParserReturn = ParserFailure | ParserResult
+export type ParserReturn = ParserFailure | ParserResult
 
 /**
  * Grammar-based parser.

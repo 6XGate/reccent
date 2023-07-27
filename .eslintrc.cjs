@@ -18,13 +18,13 @@ module.exports = defineConfig({
       files: ['*.js', '*.mjs', '*.jsx'],
       extends: './scripts/eslint/configs/ecmascript.cjs'
     },
-    // HACK: Not sure why the projects don't work if this is specified twice, for projects then rules.
+    // HACK: Not sure why the projects don't work if this is not specified twice, for projects then rules.
     {
       files: ['*.ts', '*.tsx'],
       parserOptions: {
         project: [
-          './tsconfig.json',
-          './scripts/tsconfig.json'
+          './tsconfig.esm.json',
+          './tsconfig.node.json'
         ]
       }
     },

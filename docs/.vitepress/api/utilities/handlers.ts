@@ -92,19 +92,18 @@ declare module '@microsoft/api-extractor-model' {
   interface ApiVariable { parent: ApiScope }
 }
 
-export type ApiScope =
-  | ApiEntryPoint
-  | ApiNamespace
 export type ApiStrcuture =
   | ApiInterface
   | ApiClass
-export type ApiScopeMembers =
+export type ApiScope =
+  | ApiNamespace
   | ApiStrcuture
+export type ApiScopeMembers =
   | ApiEnum
   | ApiFunction
   | ApiTypeAlias
   | ApiVariable
-export type ApiStructureMembers =
+  // export type ApiStructureMembers =
   | ApiCallSignature
   | ApiConstructSignature
   | ApiConstructor
@@ -142,8 +141,13 @@ export interface ApiKindMetaData {
   Variable: ApiMetaData<ApiVariable, ApiItemKind.Variable>
 }
 
-export type ApiItemHandlers<Result> = {
-  [Kind in ApiItemKind]: (item: ApiKindMetaData[Kind]['item']) => Result
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required to match any arguments.
+export type ApiItemHandlers<Result, Args extends any[] = never> = {
+  [Kind in ApiItemKind]: (item: ApiKindMetaData[Kind]['item'], ...args: Args) => Result
+}
+
+export type ApiItemData<Data> = {
+  [Kind in ApiItemKind]: Data
 }
 
 /*
@@ -211,8 +215,13 @@ export interface NodeKindMetaData {
   SoftBreak: NodeMetaData<DocSoftBreak, DocNodeKind.SoftBreak>
 }
 
-export type DocNodeHandlers<Result> = {
-  [Kind in DocNodeKind]: (item: NodeKindMetaData[Kind]['node']) => Result
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required to match any arguments.
+export type DocNodeHandlers<Result, Args extends any[] = never> = {
+  [Kind in DocNodeKind]: (item: NodeKindMetaData[Kind]['node'], ...args: Args) => Result
+}
+
+export type DocNodeData<Data> = {
+  [Kind in DocNodeKind]: Data
 }
 
 /*
@@ -245,3 +254,5 @@ const name: Type = {
   SoftBreak: () => { throw new Error('not implemented') },
 }
 */
+
+export type NodeStringifiers = DocNodeHandlers<string | undefined>

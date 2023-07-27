@@ -19,6 +19,11 @@ export type GrammarGraph =
   | [id: 'terminals', mode: 'are' | 'not', ...values: Array<string | [string, string]>]
   | [id: 'end']
 
+/**
+ * Determines whether the result could indicate `Empty`.
+ *
+ * @internal
+ */
 type EmptyValue<Nothing extends Empty | null> =
   Nothing extends Empty
     ? true : Nothing extends null
@@ -26,6 +31,8 @@ type EmptyValue<Nothing extends Empty | null> =
 
 /**
  * Defined grammar parser.
+ *
+ * @typeParam Nothing - Possible value types for not matching.
  *
  * @category Grammar
  */
@@ -165,15 +172,15 @@ export abstract class NonEmptyGrammar extends Grammar {
    *
    * @param max - The maximum number of repetitions.
    */
-  asMost (max: number): NonEmptyGrammar
+  atMost (max: number): NonEmptyGrammar
   /**
    * Creates a new grammar indicating this grammar may repeat a maximum number of times.
    *
    * @param id - The ID of the new derived grammar.
    * @param max - The maximum number of repetitions.
    */
-  asMost (id: string, max: number): NonEmptyGrammar
-  asMost (...args: [string | number, number?]) {
+  atMost (id: string, max: number): NonEmptyGrammar
+  atMost (...args: [string | number, number?]) {
     return typeof args[0] === 'string'
       ? this.between(args[0], 0, args[1] as number)
       : this.between(0, args[0])
@@ -231,6 +238,11 @@ export abstract class NonEmptyGrammar extends Grammar {
   }
 }
 
+/**
+ * Result of `between`, `atLeast`, `atMost`, etc.
+ *
+ * @internal
+ */
 class QuantifierGrammar extends NonEmptyGrammar {
   #target: Grammar
   #min: number
@@ -262,6 +274,11 @@ class QuantifierGrammar extends NonEmptyGrammar {
   }
 }
 
+/**
+ * Result of `butNot`.
+ *
+ * @internal
+ */
 class ExclusionGrammar extends NonEmptyGrammar {
   #target: Grammar
   #excluded: Grammar
@@ -285,7 +302,9 @@ class ExclusionGrammar extends NonEmptyGrammar {
 }
 
 /**
- * @category Grammar
+ * Result of `maybe`.
+ *
+ * @internal
  */
 export class OptionalGrammar extends Grammar<Empty> {
   #target: Grammar
@@ -321,9 +340,10 @@ export class OptionalGrammar extends Grammar<Empty> {
 /**
  * Creates a grammar that proxies to a referenced grammar.
  *
- * This is used when a grammar tree container recursion into itself directly or indirectly.
- *
  * @param fn - Function that returns the referenced grammar.
+ *
+ * @remarks
+ * This is used when a grammar tree container recursion into itself directly or indirectly.
  *
  * @category Grammar
  */
@@ -331,6 +351,11 @@ export function ref (fn: () => Grammar): NonEmptyGrammar {
   return new GrammarReference(fn)
 }
 
+/**
+ * Result of `ref`.
+ *
+ * @internal
+ */
 class GrammarReference extends NonEmptyGrammar {
   #reference: () => Grammar
 
@@ -374,6 +399,11 @@ export function choose (...args: [string | Choices, Choices?]) {
   return new AlternationGrammar(options, id)
 }
 
+/**
+ * Result of `choose`.
+ *
+ * @internal
+ */
 class AlternationGrammar extends NonEmptyGrammar {
   #choices: Grammar[]
 
@@ -425,6 +455,11 @@ export function sequence (...args: [string | Parts, Parts?]) {
   return new ConcatenationGrammar(parts, id)
 }
 
+/**
+ * Result of `sequence`.
+ *
+ * @internal
+ */
 class ConcatenationGrammar extends NonEmptyGrammar {
   #parts: AnyGrammar[]
 
@@ -464,6 +499,11 @@ export function not (target: Grammar): Grammar<Empty | null> {
   return new NegationGrammar(target)
 }
 
+/**
+ * Result of `not`.
+ *
+ * @internal
+ */
 class NegationGrammar extends Grammar<Empty | null> {
   #target: Grammar
 
@@ -493,6 +533,11 @@ export function end (): EndOfStreamGrammar {
   return new EndOfStreamGrammar()
 }
 
+/**
+ * Result of `end`.
+ *
+ * @internal
+ */
 class EndOfStreamGrammar extends Grammar<Empty | null> {
   constructor () {
     super('End', 'end of stream', true, ['end'])
@@ -536,6 +581,11 @@ export function token (...args: [string | Grammar, Grammar?]) {
   return new TokenGrammar(grammar, id)
 }
 
+/**
+ * Result of `token`.
+ *
+ * @internal
+ */
 class TokenGrammar extends NonEmptyGrammar {
   #grammar: Grammar
 
@@ -620,9 +670,10 @@ class LiteralStringGrammar extends NonEmptyGrammar {
 /**
  * Creates a grammar that matches a single character.
  *
- * This can be used as an optimized version of in-character-set and literal for one character.
- *
  * @param value - The character to match.
+ *
+ * @remarks
+ * This can be used as an optimized version of in-character-set and literal for one character.
  *
  * @category Grammar
  */
@@ -630,10 +681,11 @@ export function char (value: string): NonEmptyGrammar
 /**
  * Creates a grammar that matches a single character.
  *
- * This can be used as an optimized version of in-character-set and literal for one character.
- *
  * @param id - The ID of the new derived grammar.
  * @param value - The character to match.
+ *
+ * @remarks
+ * This can be used as an optimized version of in-character-set and literal for one character.
  *
  * @category Grammar
  */
@@ -647,6 +699,11 @@ export function char (...args: [string, string?]) {
   return new LiteralCharacterGrammar(value, cp, id)
 }
 
+/**
+ * Result of `char`.
+ *
+ * @internal
+ */
 class LiteralCharacterGrammar extends NonEmptyGrammar {
   #value: string
   #cp: number
@@ -675,6 +732,9 @@ class LiteralCharacterGrammar extends NonEmptyGrammar {
  *
  * @param value - The character to exclude.
  *
+ * @remarks
+ * This can be used as an optimized version of not in-character-set and not literal for one character.
+ *
  * @category Grammar
  */
 export function notChar (value: string): NonEmptyGrammar
@@ -683,6 +743,9 @@ export function notChar (value: string): NonEmptyGrammar
  *
  * @param id - The ID of the new derived grammar.
  * @param value - The character to exclude.
+ *
+ * @remarks
+ * This can be used as an optimized version of not-in-character-set and not literal for one character.
  *
  * @category Grammar
  */
@@ -696,9 +759,9 @@ export function notChar (...args: [string, string?]) {
 }
 
 /**
- * An optimized version of the not-in-character-set grammar for one character.
+ * Result of `notChar`.
  *
- * @category Grammar
+ * @internal
  */
 class NotCharacterGrammar extends NonEmptyGrammar {
   #cp: number
@@ -739,6 +802,11 @@ type CharSetRange =
   | number
   | [number, number]
 
+/**
+ * Base for other character set grammars.
+ *
+ * @internal
+ */
 abstract class BaseCharSetGrammar extends NonEmptyGrammar {
   readonly specifiers: CharSetSpecifier[]
   readonly ranges: CharSetRange[]
@@ -791,6 +859,11 @@ export function charSet (...args: [string | CharSetSpecifier[], CharSetSpecifier
   return new CharSetGrammar(specifiers, id)
 }
 
+/**
+ * Result of `charSet`.
+ *
+ * @internal
+ */
 class CharSetGrammar extends BaseCharSetGrammar {
   constructor (specifiers: CharSetSpecifier[], id: string | undefined) {
     super(specifiers, ['terminals', 'are', ...specifiers], id ?? '')
@@ -838,6 +911,11 @@ export function notCharSet (...args: [string | CharSetSpecifier[], CharSetSpecif
   return new NotCharSetGrammar(specifiers, id)
 }
 
+/**
+ * Result of `notCharSet`.
+ *
+ * @internal
+ */
 class NotCharSetGrammar extends BaseCharSetGrammar {
   constructor (specifiers: CharSetSpecifier[], id: string | undefined) {
     super(specifiers, ['terminals', 'not', ...specifiers], id ?? '')

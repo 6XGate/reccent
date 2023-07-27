@@ -4,20 +4,21 @@ import { z } from 'zod'
  * Passes a value as if by reference to the caller can
  * modify it and the change reflect to the callee.
  *
+ * @remarks
  * Although object types are passed around by reference.
  * Like primative values, ECMAScript always passes
  * reference by-value into functions, being a
  * pass-by-value language. This allows
  * a pass-by-reference semantic.
  *
- * @category Parsing
+ * @category Core
  */
 export type ByRef<T> = [T]
 
 /**
  * Position reference.
  *
- * @category Parsing
+ * @category Core
  */
 export type Position = ByRef<number>
 
@@ -62,9 +63,9 @@ export class Token extends String {
  * Syntax node with a child values.
  *
  * @remarks
- * The syntax node is an [Array](https://mdn.io/Array) that contain the non-terminal semantic
- * symbols that a grammar matched. Each element of a syntax node may be
- * any other typeof [Node](#node).
+ * The syntax node is an {@link https://mdn.io/Array | Array} that contain the
+ * non-terminal semantic symbols that a grammar matched. Each element
+ * of a syntax node may be any other typeof {@link Node}.
  *
  * @category Nodes
  */
@@ -141,8 +142,8 @@ export class Syntax extends Array<Node> {
  *
  * @remarks
  * All syntax tree nodes provide an `id` field to identify the grammar that matched
- * the node, if the ID was provided. A node can be a [Syntax](#syntax)
- * node or [Token](#token) node.
+ * the node, if the ID was provided. A node can be a {@link Syntax} node or
+ * {@link Token} node.
  *
  * @category Nodes
  */
@@ -167,6 +168,14 @@ export function isNode (value: unknown): value is Node {
 /**
  * Zod schemas for the nodes.
  *
+ * @remarks
+ * This acts a namespace for exported Zod schemas. The schemas include;
+ * <ul>
+ *   <li>`node` for the {@link Node} <em>type</em>,</li>
+ *   <li>`token` for the {@link Token} <em>class</em>,</li>
+ *   <li>and `syntax` for the {@link Syntax} <em>class</em></li>
+ * </ul>
+ *
  * @category Nodes
  */
 export const zod = {
@@ -187,6 +196,6 @@ export const zod = {
 /**
  * A stream position rewind function.
  *
- * @category Parsing
+ * @category Core
  */
 export type Rewind = () => void

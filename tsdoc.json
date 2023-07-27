@@ -2,18 +2,5 @@
   "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
 
   // Inherit the TSDoc configuration for API Extractor
-  "extends": [ "@microsoft/api-extractor/extends/tsdoc-base.json" ],
-
-  "tagDefinitions": [
-    // Category tag
-    {
-      "tagName": "@category",
-      "syntaxKind": "block",
-      "allowMultiple": false
-    }
-  ],
-
-  "supportForTags": {
-    "@category": true
-  }
+  "extends": ["./docs/.vitepress/api/tsdoc-base.json"]
 }
