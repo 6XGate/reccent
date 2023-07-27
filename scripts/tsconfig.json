@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "noUnusedParameters": false,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

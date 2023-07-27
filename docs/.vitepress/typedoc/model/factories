@@ -1,0 +1,5 @@
+import { defineFactories } from '../serialization'
+
+export const factories = defineFactories({
+
+})

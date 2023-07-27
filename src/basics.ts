@@ -176,6 +176,10 @@ export function isNode (value: unknown): value is Node {
  *   <li>and `syntax` for the {@link Syntax} <em>class</em></li>
  * </ul>
  *
+ * - `node` for the {@link Node} _type_,
+ * - `token` for the {@link Token} _class_,
+ * - and `syntax` for the {@link Syntax} _class_
+ *
  * @category Nodes
  */
 export const zod = {
